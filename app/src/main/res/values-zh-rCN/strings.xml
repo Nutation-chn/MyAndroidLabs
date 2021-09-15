@@ -3,4 +3,10 @@
     <string name="app_name">Dong\'s Android Labs</string>
     <string name="hello_message">你好世界！</string>
     <string name="button_message">我是个按钮</string>
+    <string name="check1_message">勾选 1</string>
+    <string name="check2_message">勾选 2</string>
+    <string name="switch1_message">开关 1</string>
+    <string name="switch2_message">开关 2</string>
+    <string name="radio1_message">选项 1</string>
+    <string name="radio2_message">选项 2</string>
 </resources>

@@ -16,21 +16,49 @@
         android:id="@+id/mybutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="10dp"
         android:text="@string/button_message"/>
     <EditText
         android:id="@+id/myedittext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <CheckBox
+        android:id="@+id/mycheckbox1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="@string/check1_message"/>
+    <CheckBox
+        android:id="@+id/mycheckbox2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check2_message"/>
+
     <Switch
+        android:id="@+id/myswitch1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="@string/switch1_message" />
+    <Switch
+        android:id="@+id/myswitch2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/switch2_message" />
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/myRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     <RadioButton
+        android:id="@+id/myRadio1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="@string/radio1_message"/>
+    <RadioButton
+        android:id="@+id/myRadio2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/radio2_message"/>
+    </RadioGroup>
     <ImageView
         android:id="@+id/logo_algonquin"
         android:src="@drawable/logo_algonquin"
