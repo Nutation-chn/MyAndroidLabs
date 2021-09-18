@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">Dong\'s Android Labs</string>
     <string name="hello_message">hello world!</string>
-    <string name="button_message">I\'m a button</string>
+    <string name="button_message">I\'m  a button</string>
+    <string name="check1_message">CheckBox 1</string>
+    <string name="check2_message">CheckBox 2</string>
+    <string name="switch1_message">Switch 1</string>
+    <string name="switch2_message">Switch 2</string>
+    <string name="radio1_message">Option 1</string>
+    <string name="radio2_message">Option 2</string>
+
 </resources>
