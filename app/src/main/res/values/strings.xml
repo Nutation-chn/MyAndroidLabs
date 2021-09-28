@@ -2,4 +2,5 @@
     <string name="app_name">Dong\'s Android Labs</string>
     <string name="hello_message">hello world!</string>
     <string name="button_message">I\'m a button</string>
+    <string name="spin_message">Spin flag</string>
 </resources>
