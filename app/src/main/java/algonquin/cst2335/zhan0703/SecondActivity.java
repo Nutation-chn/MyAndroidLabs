@@ -34,10 +34,11 @@ public class SecondActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
+        ImageView profileImage = findViewById(R.id.imageView);
         Intent fromPrevious = getIntent();
         String emailAddress = fromPrevious.getStringExtra("EmailAddress");
         TextView topText = findViewById(R.id.textView3);
-        ImageView profileImage = findViewById(R.id.imageView);
+
         topText.setText("Welcome back "+emailAddress);
 
         Button callButton = findViewById(R.id.button2);
