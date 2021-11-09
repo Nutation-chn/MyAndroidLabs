@@ -11,107 +11,57 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * @author Dong Zhang
  * @version 1.0
  */
 public class MainActivity extends AppCompatActivity {
-     /** This holds the text at the center of the screen*/
-    TextView tv = null;
-    /** This holds the editText for user to input password*/
-    EditText et = null;
-    /** This is the button to login */
-    Button btn = null;
 
+    /** This holds the editText for user to input password*/
+    EditText cityText = null;
+    /** This is the button to login */
+    Button forecastBtn = null;
+
+    String stringURL = "The server URL";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        TextView tv = findViewById(R.id.textView);
-        EditText et = findViewById(R.id.editTextPassword);
-        Button btn = findViewById(R.id.buttonLogin);
 
-        btn.setOnClickListener( clk->{
-            String password = et.getText().toString();
-            if(checkPasswordComplexity(password))
-                tv.setText("Your password is complex enough.");
-            else
-                tv.setText("You shall not pass!");
+        EditText cityText = findViewById(R.id.cityTextField);
+        Button forecastBtn = findViewById(R.id.forecastButton);
 
+        forecastBtn.setOnClickListener((click) -> {
+            Executor newThread = Executors.newSingleThreadExecutor();
+            newThread.execute(() -> {
+                //this runs another thread
+                try {
+                    String cityName = cityText.getText().toString();
+                    stringURL = "https://api.openweathermap.org/data/2.5/weather?q="
+                            + URLEncoder.encode(cityName, "UTF-8") +
+                            "&appid=7e943c97096a9784391a981c4d878b22";
+                    URL url = new URL(stringURL);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+//                    String text = (new BufferedReader(
+//                            new InputStreamReader(in, StandardCharsets.UTF_8)))
+//                            .lines()
+//                            .collect(Collectors.joining("\n"));
+                } catch (IOException ioe) {
+                    Log.e("Connection error:", ioe.getMessage());
+                }
+            });
         });
     }
-
-    /**this function check the complexity of a given string, complexity is defined as containing
-     * at least an Upper Case letter, a lower case letter, a number, and a special symbol
-     *
-     * @param pw The String that need to check complexity.
-     * @return Returns true if and only if the input string has enough complexity
-     */
-    Boolean checkPasswordComplexity(@NonNull String pw){
-        boolean foundUpperCase, foundLowerCase, foundNumber, foundSpecial;
-        foundUpperCase = foundLowerCase = foundNumber = foundSpecial = false;
-        Context context = getApplicationContext();
-
-//        start looping through string
-        for(int i=0; i< pw.length(); i++){
-            char c = pw.charAt(i);
-            Log.i("looking at char:","   "+c);
-            if (Character.isUpperCase(c)) foundUpperCase = true;
-            if (Character.isLowerCase(c)) foundLowerCase = true;
-            if (Character.isDigit(c)) foundNumber = true;
-            if (isSpecialCharacter(c)) foundSpecial = true;
-        }
-        if(!foundUpperCase)
-        {
-            Toast.makeText(context,"Password should contain Uppercase letter.", Toast.LENGTH_SHORT).show();
-//            et.setError("Password should contain Uppercase letter."); //et is null, why??
-            return false;
-        }
-
-        else if( ! foundLowerCase)
-        {
-            Toast.makeText(context,"Password should contain lowercase letter.", Toast.LENGTH_SHORT).show();
-//            et.setError("Password should contain lowercase letter.");
-            return false;
-        }
-
-        else if( ! foundNumber)
-        {
-            Toast.makeText(context,"Password should contain number.", Toast.LENGTH_SHORT).show();
-//            et.setError("Password should contain number.");
-            return false;
-        }
-        else if(! foundSpecial)
-        {
-            Toast.makeText(context,"Password should contain special character i.e. #$%^&*!@?", Toast.LENGTH_SHORT).show();
-//            et.setError("Password should contain special character i.e. #$%^&*!@?");
-            return false;
-        }
-        else
-           return true;
-    }
-
-    /**this function check if a given character is a special character
-     *
-     * @param c the character to be checked if it is a special character: #$%^&*!@?.
-     * @return return true if c is a special character, return false if it is not.
-     */
-    boolean isSpecialCharacter(char c){
-        switch (c){
-            case '#':
-            case '$':
-            case '%':
-            case '^':
-            case '&':
-            case '*':
-            case '!':
-            case '@':
-            case '?':
-                return true;
-            default:
-                return false;
-        }
-    }
-
 }
