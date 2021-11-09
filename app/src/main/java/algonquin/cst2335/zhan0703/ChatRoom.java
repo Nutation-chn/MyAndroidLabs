@@ -35,6 +35,8 @@ public class ChatRoom extends AppCompatActivity {
         buttonSend = findViewById(R.id.buttonSend);
         buttonReceive = findViewById(R.id.buttonReceive);
 
+        MyOpenHelper opener = new MyOpenHelper();
+
         chatList.setLayoutManager(new LinearLayoutManager(this));
         //things to do when click send button
         buttonSend.setOnClickListener( v -> {
