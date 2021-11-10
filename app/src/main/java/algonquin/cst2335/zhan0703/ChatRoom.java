@@ -43,8 +43,28 @@ public class ChatRoom extends AppCompatActivity {
         edit = findViewById(R.id.editTextChat);
         buttonSend = findViewById(R.id.buttonSend);
         buttonReceive = findViewById(R.id.buttonReceive);
+        //select messages with certain condition.
+//        Cursor results = db.rawQuery("Select * from " + MyOpenHelper.TABLE_NAME + " where  _id > ? and TimeSent like ?;",
+//                new String[]{"3", "%10-Nov%"});
+
         Cursor results = db.rawQuery("Select * from " + MyOpenHelper.TABLE_NAME + ";", null);
-        results.moveToNext();
+
+//        loop through the table to read all messages
+        while(results.moveToNext()){
+            //get the column number
+            int _idCol = results.getColumnIndex( "_id");
+            int messageCol = results.getColumnIndex(MyOpenHelper.col_message);
+            int sendCol = results.getColumnIndex(MyOpenHelper.col_send_receive);
+            int timeCol = results.getColumnIndex(MyOpenHelper.col_time_sent);
+
+            //get data using column number and cursor
+            long id = results.getInt(_idCol);
+            String message = results.getString( messageCol );
+            String time = results.getString( timeCol );
+            int sendOrReceive = results.getInt( sendCol);
+            messages.add(new ChatMessage(message, sendOrReceive, time, id));
+        }
+
 
         chatList.setLayoutManager(new LinearLayoutManager(this));
         //things to do when click send button
@@ -169,6 +189,13 @@ public class ChatRoom extends AppCompatActivity {
             this.sendOrReceive = sendOrReceive;
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE,dd-MMM-yyyy hh-mm-ss a", Locale.getDefault()); //formatting the date-time
             this.timeSent = sdf.format(timeSent); //convert Date to String
+        }
+
+        public ChatMessage(String message, int sendOrReceive, String timeSent, long id) {
+            this.message = message;
+            this.sendOrReceive = sendOrReceive;
+            this.timeSent = timeSent;
+            this.id = id;
         }
 
         public void setId (long l){id =l;}
