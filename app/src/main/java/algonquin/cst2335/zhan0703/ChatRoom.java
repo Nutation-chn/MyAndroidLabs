@@ -1,6 +1,9 @@
 package algonquin.cst2335.zhan0703;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,22 +28,36 @@ public class ChatRoom extends AppCompatActivity {
     MyChatAdapter adt;
     Button buttonSend;
     Button buttonReceive;
+    MyOpenHelper opener;
+    SQLiteDatabase db;
     ArrayList<ChatMessage> messages = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView( R.layout.chatlayout );
+
+        opener = new MyOpenHelper(this);
+        db = opener.getWritableDatabase();
+
         chatList = findViewById(R.id.myrecycler);
         edit = findViewById(R.id.editTextChat);
         buttonSend = findViewById(R.id.buttonSend);
         buttonReceive = findViewById(R.id.buttonReceive);
-
-        MyOpenHelper opener = new MyOpenHelper();
+        Cursor results = db.rawQuery("Select * from " + MyOpenHelper.TABLE_NAME + ";", null);
+        results.moveToNext();
 
         chatList.setLayoutManager(new LinearLayoutManager(this));
         //things to do when click send button
         buttonSend.setOnClickListener( v -> {
             ChatMessage thisMessage = new ChatMessage( edit.getText().toString(), 1,  new Date() );
+
+            ContentValues newRow = new ContentValues();
+            newRow.put(MyOpenHelper.col_message,thisMessage.getMessage());
+            newRow.put(MyOpenHelper.col_send_receive,thisMessage.getSendOrReceive());
+            newRow.put(MyOpenHelper.col_time_sent,thisMessage.getTimeSent());
+            long newId =db.insert(MyOpenHelper.TABLE_NAME,MyOpenHelper.col_message,newRow);
+            thisMessage.setId(newId);
+
             messages.add(thisMessage);
             adt.notifyItemInserted(messages.size()-1);
             edit.setText("");
@@ -48,6 +65,14 @@ public class ChatRoom extends AppCompatActivity {
         //things to do when click receive button
         buttonReceive.setOnClickListener(v -> {
             ChatMessage thisMessage = new ChatMessage( edit.getText().toString(), 2,  new Date() );
+
+            ContentValues newRow = new ContentValues();
+            newRow.put(MyOpenHelper.col_message,thisMessage.getMessage());
+            newRow.put(MyOpenHelper.col_send_receive,thisMessage.getSendOrReceive());
+            newRow.put(MyOpenHelper.col_time_sent,thisMessage.getTimeSent());
+            long newId =db.insert(MyOpenHelper.TABLE_NAME,MyOpenHelper.col_message,newRow);
+            thisMessage.setId(newId);
+
             messages.add(thisMessage);
             adt.notifyItemInserted(messages.size()-1);
             edit.setText("");
@@ -100,18 +125,25 @@ public class ChatRoom extends AppCompatActivity {
                 .setTitle("Question:")
 //              nothing happens with "no"
                 .setNegativeButton("No",(dialog, cl)->{
-
                 })
 //                delete with "yes"
                 .setPositiveButton("Yes",(dialog, cl)->{
                     ChatMessage removedMessage = messages.get(position);   //buffer of deleted message, for restoring purpose.
                     messages.remove(position);      //remove item in array
                     adt.notifyItemRemoved(position);    //notify to update UI
+                    //delete the message in database
+                    db.delete(MyOpenHelper.TABLE_NAME,"_id=?", new String[] { Long.toString(removedMessage.getId()) });
                     //Snackbar popup,with Undo option
                     Snackbar.make(messageText, "You deleted message $"+position, Snackbar.LENGTH_LONG)
                             .setAction("Undo",clk ->{
                                 messages.add(position,removedMessage);
                                 adt.notifyItemInserted(position);
+
+                                //recover delete message to database
+                                db.execSQL(String.format("Insert into \"%s\" values ( %d, \"%s\", %d, \"%s\" );"
+                                        , MyOpenHelper.TABLE_NAME, removedMessage.getId(), removedMessage.getMessage()
+                                        , removedMessage.getSendOrReceive(), removedMessage.getTimeSent()));
+
                             })
                             .show(); //show snackbar
                 })
@@ -122,13 +154,16 @@ public class ChatRoom extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     */
     //Chat message class
     private class ChatMessage
     {
         String message;
         int sendOrReceive;
         String timeSent;
-
+        long id;
         public ChatMessage(String message, int sendOrReceive, Date timeSent) {
             this.message = message;
             this.sendOrReceive = sendOrReceive;
@@ -136,6 +171,8 @@ public class ChatRoom extends AppCompatActivity {
             this.timeSent = sdf.format(timeSent); //convert Date to String
         }
 
+        public void setId (long l){id =l;}
+        public long getId() {return id;}
         public String getMessage() {
             return message;
         }
